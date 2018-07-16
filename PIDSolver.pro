@@ -6,6 +6,8 @@
 
 QT       += core gui
 
+QT += charts
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = PIDSolver
@@ -25,10 +27,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    qdoubleclipvalidator.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    qdoubleclipvalidator.h
 
 FORMS += \
         mainwindow.ui
