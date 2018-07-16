@@ -46,6 +46,15 @@
        </item>
        <item row="2" column="1">
         <widget class="QSlider" name="Kd_slider">
+         <property name="maximum">
+          <number>999</number>
+         </property>
+         <property name="pageStep">
+          <number>50</number>
+         </property>
+         <property name="value">
+          <number>20</number>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -63,6 +72,12 @@
        </item>
        <item row="1" column="1">
         <widget class="QSlider" name="Ki_slider">
+         <property name="maximum">
+          <number>999</number>
+         </property>
+         <property name="pageStep">
+          <number>50</number>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -109,6 +124,15 @@
        </item>
        <item row="0" column="1">
         <widget class="QSlider" name="Kp_slider">
+         <property name="maximum">
+          <number>999</number>
+         </property>
+         <property name="pageStep">
+          <number>50</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
