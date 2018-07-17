@@ -63,7 +63,7 @@ void MainWindow::updateSliders() {
     double Kd_val = ui->Kd_text->text().toDouble(&Kd_OK);
 
     if (Kp_OK) {
-        Kp_val = clamp(Kp_val, 0, 2);
+        Kp_val = clamp(Kp_val, 0, MainWindow::Kp_max);
         ui->Kp_text->setText(QString::number(Kp_val));
         Kp_val /= MainWindow::Kp_slider_multiplier;
         Kp_val *= (ui->Kp_slider->maximum() + 1);
@@ -72,7 +72,7 @@ void MainWindow::updateSliders() {
         changingText = false;
     }
     if (Ki_OK) {
-        Ki_val = clamp(Ki_val, 0, 0.5);
+        Ki_val = clamp(Ki_val, 0, MainWindow::Ki_max);
         ui->Ki_text->setText(QString::number(Ki_val));
         Ki_val /= MainWindow::Ki_slider_multiplier;
         Ki_val *= (ui->Ki_slider->maximum() + 1);
@@ -82,7 +82,7 @@ void MainWindow::updateSliders() {
         changingText = false;
     }
     if (Kd_OK) {
-        Kd_val = clamp(Kd_val, 0, 1);
+        Kd_val = clamp(Kd_val, 0, MainWindow::Kd_max);
         ui->Kd_text->setText(QString::number(Kd_val));
         Kd_val /= MainWindow::Kd_slider_multiplier;
         Kd_val *= (ui->Kd_slider->maximum() + 1);
