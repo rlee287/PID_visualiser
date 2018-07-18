@@ -22,7 +22,7 @@ void PIDSolver::run() {
             PIDEquation pideq(Kp, Ki, Kd, mass, mu, targetType::STEP);
             statevec.clear();
             timesteps.clear();
-            integrate(pideq, initial, 0.0, 10.0, dt, state_collect(statevec, timesteps));
+            integrate(pideq, initial, 0.0, 15.0, dt, state_collect(statevec, timesteps));
             emit done();
             calculate = false;
         } else {
