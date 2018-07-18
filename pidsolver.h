@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <atomic>
+#include <utility>
 #include <vector>
 
 #include <boost/numeric/odeint.hpp>
@@ -17,7 +18,7 @@ class PIDSolver : public QThread {
     ~PIDSolver();
     void run() override;
     void update(double kp, double ki, double kd, double m, double Mu, double dt, bool wait);
-    bool isCalculating();
+    std::pair<std::vector<double>, std::vector<ODEState>> getResults();
 
   signals:
     void done();
