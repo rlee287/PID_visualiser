@@ -4,7 +4,9 @@
 #include <QMainWindow>
 
 #include "pidsolver.h"
-#include "qdoubleclipvalidator.h"
+#include <QChart>
+#include <QDoubleValidator>
+#include <QLineSeries>
 
 namespace Ui {
 class MainWindow;
@@ -20,15 +22,22 @@ class MainWindow : public QMainWindow {
   public slots:
     void updateSliders();
     void updateLineEdits();
+    void updateGraph();
 
   private:
     Ui::MainWindow *ui;
+    void resizeEvent(QResizeEvent *event) override;
 
     QValidator *checkPIDs;
     QValidator *checkdt;
     PIDSolver *solverThread;
+    QtCharts::QChart *pidChart;
+    QtCharts::QChart *compChart;
+    QGraphicsScene *outScene;
+    QGraphicsScene *compScene;
 
     bool changingText = false;
+    bool changingSlider = false;
 
     constexpr static double Kp_slider_multiplier = 2;
     constexpr static double Ki_slider_multiplier = 0.5;
