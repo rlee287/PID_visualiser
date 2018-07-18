@@ -2,46 +2,21 @@
 
 #include <cmath>
 
-ODEState::ODEState() {}
-
-double &ODEState ::operator[](std::size_t idx) {
-    switch (idx) {
-    case 0:
-        return response;
-        break;
-    case 1:
-        return deriv;
-        break;
-    case 2:
-        return integratederror;
-        break;
-    default:
-        std::cerr << "Error: attempted to access ODEState element " << idx << std::endl;
-        return workaround_temp_refs;
-        break;
-    }
-}
-
-const double &ODEState ::operator[](std::size_t idx) const {
-    switch (idx) {
-    case 0:
-        return response;
-        break;
-    case 1:
-        return deriv;
-        break;
-    case 2:
-        return integratederror;
-        break;
-    default:
-        std::cerr << "Error: attempted to access ODEState element " << idx << std::endl;
-        return workaround_temp_refs;
-        break;
-    }
-}
-
 PIDEquation::PIDEquation(double Kp, double Ki, double Kd, double mass, double mu, targetType targ)
     : Kp(Kp), Ki(Ki), Kd(Kd), mass(mass), mu(mu), targ(targ) {}
+
+state_collect::state_collect(std::vector<ODEState> &states, std::vector<double> &times)
+    : m_states(states), m_times(times) {}
+
+void state_collect::operator()(const ODEState &x, double t) {
+    m_states.push_back(x);
+    m_times.push_back(t);
+}
+
+void state_collect::reset() {
+    m_states.clear();
+    m_times.clear();
+}
 
 static double step(const double t) {
     return 1;

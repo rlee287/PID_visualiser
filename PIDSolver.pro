@@ -30,13 +30,15 @@ SOURCES += \
         mainwindow.cpp \
     qdoubleclipvalidator.cpp \
     pidsolver.cpp \
-    pidode.cpp
+    pidode.cpp \
+    odestate.cpp
 
 HEADERS += \
         mainwindow.h \
     qdoubleclipvalidator.h \
     pidsolver.h \
-    pidode.h
+    pidode.h \
+    odestate.h
 
 FORMS += \
         mainwindow.ui

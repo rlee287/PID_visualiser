@@ -1,21 +1,9 @@
-#ifndef ODESTATE_H
-#define ODESTATE_H
+#ifndef PIDODE_H
+#define PIDODE_H
 
-#include <iostream>
+#include <vector>
 
-class ODEState {
-  public:
-    ODEState();
-    double response = 0;
-    double deriv = 0;
-    double integratederror = 0;
-
-    double &operator[](std::size_t idx);
-    const double &operator[](std::size_t idx) const;
-
-  private:
-    double workaround_temp_refs = 0;
-};
+#include "odestate.h"
 
 enum targetType { STEP, SIGMOID, SQUAREWAVE };
 
@@ -28,4 +16,14 @@ class PIDEquation {
     double Kp, Ki, Kd, mass, mu;
     targetType targ;
 };
-#endif // ODESTATE_H
+
+struct state_collect {
+    std::vector<ODEState> &m_states;
+    std::vector<double> &m_times;
+
+    state_collect(std::vector<ODEState> &states, std::vector<double> &times);
+
+    void reset();
+    void operator()(const ODEState &x, double t);
+};
+#endif // PIDODE_H

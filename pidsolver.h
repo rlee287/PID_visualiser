@@ -7,7 +7,8 @@
 
 #include <boost/numeric/odeint.hpp>
 
-using namespace boost::numeric::odeint;
+#include "odestate.h"
+#include "pidode.h"
 
 class PIDSolver : public QThread {
     Q_OBJECT
@@ -15,16 +16,17 @@ class PIDSolver : public QThread {
     explicit PIDSolver(QObject *parent = 0);
     ~PIDSolver();
     void run() override;
-    void update(bool wait);
+    void update(double kp, double ki, double kd, double m, double Mu, bool wait);
     bool isCalculating();
 
   signals:
     void done();
 
   private:
+    double Kp, Ki, Kd, mass, mu;
     std::atomic_bool calculate;
     std::vector<double> timesteps;
-    std::vector<double[3]> state;
+    std::vector<ODEState> statevec;
 };
 
 #endif // PIDSOLVER_H
