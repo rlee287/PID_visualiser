@@ -27,6 +27,7 @@ void PIDSolver::run() {
             integrate(pideq, initial, 0.0, 10.0, dt, state_collect(statevec, timesteps));
             printf("p %f i %f d %f mass %f mu %f > final %f\n", Kp, Ki, Kd, mass, mu, initial[0]);
             printf("Size of statevec is %lu\n", statevec.size());
+            printf("Size of timesteps is %lu\n", timesteps.size());
             std::cout.flush();
             // PID calculate here
             emit done();
