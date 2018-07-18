@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "odestate.h"
+typedef std::vector<double> ODEState;
 
 enum targetType { STEP, SIGMOID, SQUAREWAVE };
 

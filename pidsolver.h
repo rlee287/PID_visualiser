@@ -8,7 +8,6 @@
 
 #include <boost/numeric/odeint.hpp>
 
-#include "odestate.h"
 #include "pidode.h"
 
 class PIDSolver : public QThread {

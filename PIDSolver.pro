@@ -34,8 +34,7 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
     pidsolver.h \
-    pidode.h \
-    odestate.h
+    pidode.h
 
 FORMS += \
         mainwindow.ui
