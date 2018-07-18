@@ -26,4 +26,8 @@ struct state_collect {
     void reset();
     void operator()(const ODEState &x, double t);
 };
+
+double step(const double t);
+double sigmoid(const double t);
+double squarewave(const double t);
 #endif // PIDODE_H

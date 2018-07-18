@@ -18,11 +18,11 @@ void state_collect::reset() {
     m_times.clear();
 }
 
-static double step(const double t) {
+double step(const double t) {
     return 1;
 }
 
-static double sigmoid(const double t) {
+double sigmoid(const double t) {
     double result = 1;
     result += exp(-2 * t + 4);
     result = 1 / result;
@@ -30,7 +30,7 @@ static double sigmoid(const double t) {
     return result;
 }
 
-static double squarewave(const double t) {
+double squarewave(const double t) {
     if (t > 2 && t <= 4) {
         return 1;
     } else if (t > 4 && t <= 6) {
