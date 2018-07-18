@@ -30,8 +30,7 @@ SOURCES += \
         mainwindow.cpp \
     qdoubleclipvalidator.cpp \
     pidsolver.cpp \
-    pidode.cpp \
-    odestate.cpp
+    pidode.cpp
 
 HEADERS += \
         mainwindow.h \

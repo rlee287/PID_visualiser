@@ -2,6 +2,7 @@
 
 using namespace boost::numeric::odeint;
 
+#include <stdio.h>
 PIDSolver::PIDSolver(QObject *parent) : QThread(parent) {
     calculate = false;
 }
@@ -14,12 +15,16 @@ PIDSolver::~PIDSolver() {
 void PIDSolver::run() {
     while (true) {
         if (calculate) {
-            ODEState initial;
+            ODEState initial(3);
+            initial[0] = 0;
+            initial[1] = 1;
+            initial[2] = 2;
             PIDEquation pideq(Kp, Ki, Kd, mass, mu, targetType::STEP);
-            typedef runge_kutta_dopri5<ODEState, double, ODEState, double, vector_space_algebra>
-                stepper;
-            size_t steps = integrate<double, PIDEquation, ODEState, double, state_collect>(
-                pideq, initial, 0.0, 10.0, 0.1, state_collect(statevec, timesteps));
+            /*size_t steps = integrate<double, PIDEquation, ODEState, double, state_collect>(
+                pideq, initial, 0.0, 10.0, 0.1, state_collect(statevec, timesteps));*/
+            integrate(pideq, initial, 0.0, 10.0, 0.1, state_collect(statevec, timesteps));
+            printf("p %f i %f d %f mass %f mu %f > final %f\n", Kp, Ki, Kd, mass, mu, initial[0]);
+            std::cout.flush();
             // PID calculate here
             emit done();
             calculate = false;
@@ -31,6 +36,9 @@ void PIDSolver::run() {
 }
 
 void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, bool wait) {
+    while (calculate) {
+        // Wait for calculate to become false again
+    }
     Kp = kp;
     Ki = ki;
     Kd = kd;
