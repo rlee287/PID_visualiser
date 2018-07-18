@@ -3,6 +3,7 @@
 #include "ui_mainwindow.h"
 
 #include <QScrollBar>
+#include <QValueAxis>
 
 #include <boost/range/combine.hpp>
 #include <iostream>
@@ -21,6 +22,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     pidChart = new QChart();
     pidChart->setTitle("Simulation Output");
+    QValueAxis *theX = new QValueAxis(pidChart);
+    theX->setRange(0, 15);
+    theX->setTickCount(6);
+    QValueAxis *theY = new QValueAxis(pidChart);
+    theY->setRange(-0.5, 1.5);
+    theY->setTickCount(5);
+    pidChart->setAxisX(theX);
+    pidChart->setAxisY(theY);
+
     outScene = new QGraphicsScene(ui->out_graph);
     ui->out_graph->setScene(outScene);
     outScene->addItem(pidChart);
@@ -163,7 +173,8 @@ void MainWindow::updateGraph() {
     }
     pidChart->removeAllSeries();
     pidChart->addSeries(series);
-    pidChart->createDefaultAxes();
+    series->attachAxis(pidChart->axisX());
+    series->attachAxis(pidChart->axisY());
     resizeEvent(nullptr);
 }
 
