@@ -31,11 +31,11 @@ double sigmoid(const double t) {
 }
 
 double squarewave(const double t) {
-    if (t > 2 && t <= 4) {
+    if (t > 3 && t <= 6) {
         return 1;
-    } else if (t > 4 && t <= 6) {
+    } else if (t > 6 && t <= 9) {
         return 0;
-    } else if (t > 6 && t <= 8) {
+    } else if (t > 9 && t <= 12) {
         return 1;
     } else {
         return 0.5;
