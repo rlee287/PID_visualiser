@@ -28,13 +28,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    qdoubleclipvalidator.cpp \
     pidsolver.cpp \
     pidode.cpp
 
 HEADERS += \
         mainwindow.h \
-    qdoubleclipvalidator.h \
     pidsolver.h \
     pidode.h \
     odestate.h
