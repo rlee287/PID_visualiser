@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
 
     pidChart = new QChart();
-    pidChart->setTitle("Simulation Output");
+    pidChart->setTitle("PID Simulation");
     QValueAxis *theX = new QValueAxis(pidChart);
     theX->setRange(0, 15);
     theX->setTickCount(6);
@@ -165,16 +165,30 @@ void MainWindow::updateSliders() {
 }
 
 void MainWindow::updateGraph() {
+    // PID output
     QLineSeries *series = new QLineSeries(pidChart);
     std::pair<std::vector<double>, std::vector<ODEState>> results = solverThread->getResults();
     size_t len = results.first.size();
     for (size_t i = 0; i < len; i++) {
         series->append(results.first[i], results.second[i][0]);
     }
+    series->setName("PID Controller");
     pidChart->removeAllSeries();
     pidChart->addSeries(series);
     series->attachAxis(pidChart->axisX());
     series->attachAxis(pidChart->axisY());
+
+    // Setpoint
+    QLineSeries *targSeries = new QLineSeries(pidChart);
+    for (size_t i = 0; i < len; i++) {
+        targSeries->append(results.first[i], step(results.first[i]));
+    }
+    targSeries->setName("Setpoint");
+    pidChart->addSeries(targSeries);
+    targSeries->attachAxis(pidChart->axisX());
+    targSeries->attachAxis(pidChart->axisY());
+
+    // Trigger resize event to properly redraw the graph
     resizeEvent(nullptr);
 }
 
