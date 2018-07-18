@@ -34,11 +34,11 @@ double squarewave(const double t) {
     if (t > 2 && t <= 4) {
         return 1;
     } else if (t > 4 && t <= 6) {
-        return -1;
+        return 0;
     } else if (t > 6 && t <= 8) {
         return 1;
     } else {
-        return 0;
+        return 0.5;
     }
 }
 void PIDEquation::operator()(const ODEState &x, ODEState &dxdt, const double t) {
