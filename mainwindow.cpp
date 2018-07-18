@@ -38,6 +38,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->Kd_text, &QLineEdit::textChanged, this, &MainWindow::updateSliders);
     connect(ui->mass_text, &QLineEdit::textChanged, this, &MainWindow::updateSliders);
     connect(ui->mu_text, &QLineEdit::textChanged, this, &MainWindow::updateSliders);
+
+    // Update Sliders is nondestructive
+    connect(ui->dt_enter, &QLineEdit::textChanged, this, &MainWindow::updateSliders);
+
     solverThread->start();
 }
 
@@ -64,7 +68,11 @@ void MainWindow::updateLineEdits() {
         ui->Kd_text->setText(QString::number(Kd_val));
         ui->mass_text->setText(QString::number(mass_val));
         ui->mu_text->setText(QString::number(mu_val));
-        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, false);
+
+        double dt = ui->dt_enter->text().toDouble();
+        dt = clamp(dt, MainWindow::dt_min, MainWindow::dt_max);
+
+        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, false);
     }
 }
 
@@ -126,7 +134,11 @@ void MainWindow::updateSliders() {
         ui->mu_slider->setValue((int)mu_sl);
         changingText = false;
     }
-    solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, false);
+
+    double dt = ui->dt_enter->text().toDouble();
+    dt = clamp(dt, MainWindow::dt_min, MainWindow::dt_max);
+
+    solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, false);
 }
 
 MainWindow::~MainWindow() {

@@ -22,7 +22,7 @@ void PIDSolver::run() {
             PIDEquation pideq(Kp, Ki, Kd, mass, mu, targetType::STEP);
             /*size_t steps = integrate<double, PIDEquation, ODEState, double, state_collect>(
                 pideq, initial, 0.0, 10.0, 0.1, state_collect(statevec, timesteps));*/
-            integrate(pideq, initial, 0.0, 10.0, 0.1, state_collect(statevec, timesteps));
+            integrate(pideq, initial, 0.0, 10.0, dt, state_collect(statevec, timesteps));
             printf("p %f i %f d %f mass %f mu %f > final %f\n", Kp, Ki, Kd, mass, mu, initial[0]);
             std::cout.flush();
             // PID calculate here
@@ -35,7 +35,7 @@ void PIDSolver::run() {
     }
 }
 
-void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, bool wait) {
+void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, double dt, bool wait) {
     while (calculate) {
         // Wait for calculate to become false again
     }
@@ -44,6 +44,7 @@ void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, boo
     Kd = kd;
     mass = m;
     mu = Mu;
+    dt = dt;
     calculate = true;
     if (wait) {
         while (calculate) {

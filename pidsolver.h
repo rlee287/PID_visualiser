@@ -16,14 +16,14 @@ class PIDSolver : public QThread {
     explicit PIDSolver(QObject *parent = 0);
     ~PIDSolver();
     void run() override;
-    void update(double kp, double ki, double kd, double m, double Mu, bool wait);
+    void update(double kp, double ki, double kd, double m, double Mu, double dt, bool wait);
     bool isCalculating();
 
   signals:
     void done();
 
   private:
-    double Kp, Ki, Kd, mass, mu;
+    double Kp, Ki, Kd, mass, mu, dt;
     std::atomic_bool calculate;
     std::vector<double> timesteps;
     std::vector<ODEState> statevec;
