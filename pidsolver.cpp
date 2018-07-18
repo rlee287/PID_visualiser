@@ -17,8 +17,8 @@ void PIDSolver::run() {
         if (calculate) {
             ODEState initial(3);
             initial[0] = 0;
-            initial[1] = 1;
-            initial[2] = 2;
+            initial[1] = 0;
+            initial[2] = 0;
             PIDEquation pideq(Kp, Ki, Kd, mass, mu, targetType::STEP);
             statevec.clear();
             timesteps.clear();
