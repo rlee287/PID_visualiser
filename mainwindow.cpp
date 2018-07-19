@@ -13,9 +13,6 @@ using namespace QtCharts;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 
     // MainWindow takes ownership using QPointer
-    // Keep separate in case this is changed later
-    checkPIDs = new QDoubleValidator(this);
-    checkdt = new QDoubleValidator(this);
     solverThread = new PIDSolver(this);
 
     ui->setupUi(this);
@@ -44,11 +41,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->dt_enter->setText("0.02");
 
-    ui->dt_enter->setValidator(checkdt);
-    ui->Kp_text->setValidator(checkPIDs);
-    ui->Ki_text->setValidator(checkPIDs);
-    ui->Kd_text->setValidator(checkPIDs);
-
     connect(ui->Kp_slider, &QSlider::valueChanged, this, &MainWindow::updateLineEdits);
     connect(ui->Ki_slider, &QSlider::valueChanged, this, &MainWindow::updateLineEdits);
     connect(ui->Kd_slider, &QSlider::valueChanged, this, &MainWindow::updateLineEdits);
@@ -62,7 +54,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // Update Sliders is nondestructive
     connect(ui->dt_enter, &QLineEdit::textChanged, this, &MainWindow::updateSliders);
-    // connect(ui->target_select, SIGNAL(currentIndexChanged(int)), this, SLOT(updateSliders()));
     connect(ui->target_select,
             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             &MainWindow::updateSliders);
@@ -70,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(solverThread, &PIDSolver::done, this, &MainWindow::updateGraph);
 
     solverThread->start();
-    // usleep(20000);
     updateLineEdits();
 }
 

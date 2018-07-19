@@ -5,7 +5,6 @@
 
 #include "pidsolver.h"
 #include <QChart>
-#include <QDoubleValidator>
 #include <QLineSeries>
 
 namespace Ui {
@@ -28,8 +27,6 @@ class MainWindow : public QMainWindow {
     Ui::MainWindow *ui;
     void resizeEvent(QResizeEvent *event) override;
 
-    QValidator *checkPIDs;
-    QValidator *checkdt;
     PIDSolver *solverThread;
     QtCharts::QChart *pidChart;
     QtCharts::QChart *compChart;
