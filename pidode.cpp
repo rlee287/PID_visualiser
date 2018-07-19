@@ -31,14 +31,10 @@ double sigmoid(const double t) {
 }
 
 double squarewave(const double t) {
-    if (t > 3 && t <= 6) {
-        return 1;
-    } else if (t > 6 && t <= 9) {
-        return 0;
-    } else if (t > 9 && t <= 12) {
+    if (t > 1 && t <= 8) {
         return 1;
     } else {
-        return 0.5;
+        return 0;
     }
 }
 void PIDEquation::operator()(const ODEState &x, ODEState &dxdt, const double t) {
