@@ -38,9 +38,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->unit_select->addItem("1:1");
 
-    ui->target_select->addItem("step");
-    ui->target_select->addItem("sigmoid");
-    ui->target_select->addItem("squarecycle");
+    ui->target_select->addItem("step", targetType::STEP);
+    ui->target_select->addItem("sigmoid", targetType::SIGMOID);
+    ui->target_select->addItem("squarecycle", targetType::SQUAREWAVE);
 
     ui->dt_enter->setText("0.02");
 
@@ -62,11 +62,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // Update Sliders is nondestructive
     connect(ui->dt_enter, &QLineEdit::textChanged, this, &MainWindow::updateSliders);
+    // connect(ui->target_select, SIGNAL(currentIndexChanged(int)), this, SLOT(updateSliders()));
+    connect(ui->target_select,
+            static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+            &MainWindow::updateSliders);
 
     connect(solverThread, &PIDSolver::done, this, &MainWindow::updateGraph);
 
     solverThread->start();
-    usleep(20000);
+    // usleep(20000);
     updateLineEdits();
 }
 
@@ -99,7 +103,23 @@ void MainWindow::updateLineEdits() {
         dt = clamp(dt, MainWindow::dt_min, MainWindow::dt_max);
         ui->dt_enter->setText(QString::number(dt));
 
-        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, false);
+        targetType setpt;
+        switch (ui->target_select->currentIndex()) {
+        case 0:
+            setpt = targetType::STEP;
+            break;
+        case 1:
+            setpt = targetType::SIGMOID;
+            break;
+        case 2:
+            setpt = targetType::SQUAREWAVE;
+            break;
+        default:
+            setpt = targetType::STEP;
+            break;
+        }
+
+        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, setpt, false);
         changingSlider = false;
     }
 }
@@ -159,7 +179,23 @@ void MainWindow::updateSliders() {
         dt = clamp(dt, MainWindow::dt_min, MainWindow::dt_max);
         ui->dt_enter->setText(QString::number(dt));
 
-        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, false);
+        targetType setpt;
+        switch (ui->target_select->currentIndex()) {
+        case 0:
+            setpt = targetType::STEP;
+            break;
+        case 1:
+            setpt = targetType::SIGMOID;
+            break;
+        case 2:
+            setpt = targetType::SQUAREWAVE;
+            break;
+        default:
+            setpt = targetType::STEP;
+            break;
+        }
+
+        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, setpt, false);
         changingText = false;
     }
 }
@@ -181,7 +217,23 @@ void MainWindow::updateGraph() {
     // Setpoint
     QLineSeries *targSeries = new QLineSeries(pidChart);
     for (size_t i = 0; i < len; i++) {
-        targSeries->append(results.first[i], step(results.first[i]));
+        int setpt_index = ui->target_select->currentIndex();
+        double setp;
+        switch (setpt_index) {
+        case 0:
+            setp = step(results.first[i]);
+            break;
+        case 1:
+            setp = sigmoid(results.first[i]);
+            break;
+        case 2:
+            setp = squarewave(results.first[i]);
+            break;
+        default:
+            setp = 0;
+            break;
+        }
+        targSeries->append(results.first[i], setp);
     }
     targSeries->setName("Setpoint");
     pidChart->addSeries(targSeries);

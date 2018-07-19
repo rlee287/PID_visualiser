@@ -19,7 +19,7 @@ void PIDSolver::run() {
             initial[0] = 0;
             initial[1] = 0;
             initial[2] = 0;
-            PIDEquation pideq(Kp, Ki, Kd, mass, mu, targetType::STEP);
+            PIDEquation pideq(Kp, Ki, Kd, mass, mu, typ);
             statevec.clear();
             timesteps.clear();
             integrate(pideq, initial, 0.0, 15.0, dt, state_collect(statevec, timesteps));
@@ -34,7 +34,8 @@ void PIDSolver::run() {
     }
 }
 
-void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, double dt, bool wait) {
+void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, double Dt,
+                       targetType setpoint, bool wait) {
     while (calculate) {
         // Wait for calculate to become false again
     }
@@ -43,7 +44,8 @@ void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, dou
     Kd = kd;
     mass = m;
     mu = Mu;
-    dt = dt;
+    dt = Dt;
+    typ = setpoint;
     calculate = true;
     if (wait) {
         while (calculate) {
