@@ -5,16 +5,16 @@
 
 typedef std::vector<double> ODEState;
 
-enum targetType { STEP, SIGMOID, SQUAREWAVE };
+enum setptType { STEP, SIGMOID, SQUARESTEP };
 
 class PIDEquation {
   public:
-    PIDEquation(double Kp, double Ki, double Kd, double mass, double mu, targetType targ);
+    PIDEquation(double Kp, double Ki, double Kd, double mass, double mu, setptType targ);
     void operator()(const ODEState &x, ODEState &dxdt, const double t);
 
   private:
     double Kp, Ki, Kd, mass, mu;
-    targetType targ;
+    setptType targ;
 };
 
 struct state_collect {
@@ -29,5 +29,5 @@ struct state_collect {
 
 double step(const double t);
 double sigmoid(const double t);
-double squarewave(const double t);
+double squarestep(const double t);
 #endif // PIDODE_H

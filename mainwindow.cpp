@@ -3,7 +3,6 @@
 #include "ui_mainwindow.h"
 
 #include <QScrollBar>
-#include <QValueAxis>
 
 #include <boost/range/combine.hpp>
 #include <iostream>
@@ -19,14 +18,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     pidChart = new QChart();
     pidChart->setTitle("PID Simulation");
-    QValueAxis *theX = new QValueAxis(pidChart);
-    theX->setRange(0, 15);
-    theX->setTickCount(6);
-    QValueAxis *theY = new QValueAxis(pidChart);
-    theY->setRange(-0.5, 1.5);
-    theY->setTickCount(5);
-    pidChart->setAxisX(theX);
-    pidChart->setAxisY(theY);
+    // QValueAxis theX;
+    theX.setRange(0, 15);
+    theX.setTickCount(6);
+    // QValueAxis theY;
+    theY.setRange(-0.5, 1.5);
+    theY.setTickCount(5);
+    // pidChart takes ownership
+    pidChart->addAxis(&theX, Qt::AlignBottom);
+    pidChart->addAxis(&theY, Qt::AlignLeft);
 
     outScene = new QGraphicsScene(ui->out_graph);
     ui->out_graph->setScene(outScene);
@@ -35,9 +35,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->unit_select->addItem("1:1");
 
-    ui->target_select->addItem("step", targetType::STEP);
-    ui->target_select->addItem("sigmoid", targetType::SIGMOID);
-    ui->target_select->addItem("squarecycle", targetType::SQUAREWAVE);
+    ui->target_select->addItem("step", setptType::STEP);
+    ui->target_select->addItem("sigmoid", setptType::SIGMOID);
+    ui->target_select->addItem("squarestep", setptType::SQUARESTEP);
 
     ui->dt_enter->setText("0.02");
 
@@ -93,19 +93,19 @@ void MainWindow::updateLineEdits() {
         dt = clamp(dt, MainWindow::dt_min, MainWindow::dt_max);
         ui->dt_enter->setText(QString::number(dt));
 
-        targetType setpt;
+        setptType setpt;
         switch (ui->target_select->currentIndex()) {
         case 0:
-            setpt = targetType::STEP;
+            setpt = setptType::STEP;
             break;
         case 1:
-            setpt = targetType::SIGMOID;
+            setpt = setptType::SIGMOID;
             break;
         case 2:
-            setpt = targetType::SQUAREWAVE;
+            setpt = setptType::SQUARESTEP;
             break;
         default:
-            setpt = targetType::STEP;
+            setpt = setptType::STEP;
             break;
         }
 
@@ -169,19 +169,19 @@ void MainWindow::updateSliders() {
         dt = clamp(dt, MainWindow::dt_min, MainWindow::dt_max);
         ui->dt_enter->setText(QString::number(dt));
 
-        targetType setpt;
+        setptType setpt;
         switch (ui->target_select->currentIndex()) {
         case 0:
-            setpt = targetType::STEP;
+            setpt = setptType::STEP;
             break;
         case 1:
-            setpt = targetType::SIGMOID;
+            setpt = setptType::SIGMOID;
             break;
         case 2:
-            setpt = targetType::SQUAREWAVE;
+            setpt = setptType::SQUARESTEP;
             break;
         default:
-            setpt = targetType::STEP;
+            setpt = setptType::STEP;
             break;
         }
 
@@ -205,7 +205,7 @@ void MainWindow::updateGraph() {
     series->attachAxis(pidChart->axisY());
 
     // Setpoint
-    QLineSeries *targSeries = new QLineSeries(pidChart);
+    QLineSeries *setptSeries = new QLineSeries(pidChart);
     for (size_t i = 0; i < len; i++) {
         int setpt_index = ui->target_select->currentIndex();
         double setp;
@@ -217,18 +217,18 @@ void MainWindow::updateGraph() {
             setp = sigmoid(results.first[i]);
             break;
         case 2:
-            setp = squarewave(results.first[i]);
+            setp = squarestep(results.first[i]);
             break;
         default:
             setp = 0;
             break;
         }
-        targSeries->append(results.first[i], setp);
+        setptSeries->append(results.first[i], setp);
     }
-    targSeries->setName("Setpoint");
-    pidChart->addSeries(targSeries);
-    targSeries->attachAxis(pidChart->axisX());
-    targSeries->attachAxis(pidChart->axisY());
+    setptSeries->setName("Setpoint");
+    pidChart->addSeries(setptSeries);
+    setptSeries->attachAxis(pidChart->axisX());
+    setptSeries->attachAxis(pidChart->axisY());
 
     // Trigger resize event to properly redraw the graph
     resizeEvent(nullptr);
@@ -238,9 +238,10 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
     pidChart->setMargins(QMargins(0, 0, 0, 0));
     pidChart->setPos(0, 0);
     QSize outSize = ui->out_graph->size();
+    // Shrink because this size is slightly too big
     outSize -= QSize(20, 30);
     pidChart->resize(outSize);
-    // ui->out_graph->size();
+    // Set manually in order to force shrinkage when necessary
     outScene->setSceneRect(0, 0, outSize.width(), outSize.height());
 }
 

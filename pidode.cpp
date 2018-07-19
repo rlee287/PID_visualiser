@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-PIDEquation::PIDEquation(double Kp, double Ki, double Kd, double mass, double mu, targetType targ)
+PIDEquation::PIDEquation(double Kp, double Ki, double Kd, double mass, double mu, setptType targ)
     : Kp(Kp), Ki(Ki), Kd(Kd), mass(mass), mu(mu), targ(targ) {}
 
 state_collect::state_collect(std::vector<ODEState> &states, std::vector<double> &times)
@@ -30,24 +30,25 @@ double sigmoid(const double t) {
     return result;
 }
 
-double squarewave(const double t) {
+double squarestep(const double t) {
     if (t > 1 && t <= 8) {
         return 1;
     } else {
         return 0;
     }
 }
+
 void PIDEquation::operator()(const ODEState &x, ODEState &dxdt, const double t) {
     double SP;
     switch (targ) {
-    case targetType::STEP:
+    case setptType::STEP:
         SP = step(t);
         break;
-    case targetType::SIGMOID:
+    case setptType::SIGMOID:
         SP = sigmoid(t);
         break;
-    case targetType::SQUAREWAVE:
-        SP = squarewave(t);
+    case setptType::SQUARESTEP:
+        SP = squarestep(t);
         break;
     default:
         SP = 0;

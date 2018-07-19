@@ -6,6 +6,7 @@
 #include "pidsolver.h"
 #include <QChart>
 #include <QLineSeries>
+#include <QValueAxis>
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +30,8 @@ class MainWindow : public QMainWindow {
 
     PIDSolver *solverThread;
     QtCharts::QChart *pidChart;
+    QtCharts::QValueAxis theX;
+    QtCharts::QValueAxis theY;
     QtCharts::QChart *compChart;
     QGraphicsScene *outScene;
     QGraphicsScene *compScene;

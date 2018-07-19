@@ -35,7 +35,7 @@ void PIDSolver::run() {
 }
 
 void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, double Dt,
-                       targetType setpoint, bool wait) {
+                       setptType setpoint, bool wait) {
     while (calculate) {
         // Wait for calculate to become false again
     }
