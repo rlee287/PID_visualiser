@@ -24,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // QValueAxis theY;
     thePIDY.setRange(-0.5, 1.5);
     thePIDY.setTickCount(5);
-    // pidChart takes ownership
     pidChart->addAxis(&thePIDX, Qt::AlignBottom);
     pidChart->addAxis(&thePIDY, Qt::AlignLeft);
 
@@ -67,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->mu_text, &QLineEdit::textChanged, this, &MainWindow::updateSliders);
 
     // Update Sliders is nondestructive
-    connect(ui->dt_enter, &QLineEdit::textChanged, this, &MainWindow::updateSliders);
+    connect(ui->dt_enter, &QLineEdit::editingFinished, this, &MainWindow::updateSliders);
     connect(ui->target_select,
             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             &MainWindow::updateSliders);
