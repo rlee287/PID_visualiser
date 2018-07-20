@@ -42,12 +42,12 @@ class MainWindow : public QMainWindow {
     bool changingSlider = false;
 
     constexpr static double Kp_slider_multiplier = 2;
-    constexpr static double Ki_slider_multiplier = 0.1;
+    constexpr static double Ki_slider_multiplier = 0.25;
     constexpr static double Kd_slider_multiplier = 1;
     constexpr static double mass_slider_multiplier = 1;
     constexpr static double mu_slider_multiplier = 1.5;
     constexpr static double Kp_max = 3;
-    constexpr static double Ki_max = 0.2;
+    constexpr static double Ki_max = 0.5;
     constexpr static double Kd_max = 1.5;
     constexpr static double mass_max = 1.5;
     constexpr static double mu_max = 2;
