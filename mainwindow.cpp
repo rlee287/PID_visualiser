@@ -291,7 +291,6 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
     // Shrink because this size is slightly too big
     outSize -= QSize(20, 30);
     pidChart->resize(outSize);
-    std::cout << "outSize: " << outSize.width() << ", " << outSize.height() << std::endl;
     // Set manually in order to force shrinkage when necessary
     outScene->setSceneRect(0, 0, outSize.width(), outSize.height());
 
@@ -302,7 +301,6 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
     // Shrink because this size is slightly too big
     outSize -= QSize(20, 30);
     compChart->resize(outSize);
-    std::cout << "compSize: " << outSize.width() << ", " << outSize.height() << std::endl;
     // Set manually in order to force shrinkage when necessary
     compScene->setSceneRect(0, 0, outSize.width(), outSize.height());
 }
