@@ -23,6 +23,7 @@ class MainWindow : public QMainWindow {
     void updateSliders();
     void updateLineEdits();
     void updateGraph();
+    void resizeEventSlot();
 
   private:
     Ui::MainWindow *ui;
