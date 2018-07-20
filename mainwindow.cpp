@@ -19,19 +19,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     pidChart = new QChart();
     pidChart->setTitle("PID Simulation");
     // QValueAxis theX;
-    theX.setRange(0, 15);
-    theX.setTickCount(6);
+    thePIDX.setRange(0, 15);
+    thePIDX.setTickCount(6);
     // QValueAxis theY;
-    theY.setRange(-0.5, 1.5);
-    theY.setTickCount(5);
+    thePIDY.setRange(-0.5, 1.5);
+    thePIDY.setTickCount(5);
     // pidChart takes ownership
-    pidChart->addAxis(&theX, Qt::AlignBottom);
-    pidChart->addAxis(&theY, Qt::AlignLeft);
+    pidChart->addAxis(&thePIDX, Qt::AlignBottom);
+    pidChart->addAxis(&thePIDY, Qt::AlignLeft);
+
+    compChart = new QChart();
+    compChart->setTitle("PID Components");
+    theCompX.setRange(0, 15);
+    theCompX.setTickCount(6);
+    theCompY.setRange(-1, 1);
+    theCompY.setTickCount(5);
+    compChart->addAxis(&theCompX, Qt::AlignBottom);
+    compChart->addAxis(&theCompY, Qt::AlignLeft);
 
     outScene = new QGraphicsScene(ui->out_graph);
     ui->out_graph->setScene(outScene);
     outScene->addItem(pidChart);
     ui->out_graph->setRenderHint(QPainter::Antialiasing);
+
+    compScene = new QGraphicsScene(ui->comp_graph);
+    ui->comp_graph->setScene(compScene);
+    compScene->addItem(compChart);
+    ui->comp_graph->setRenderHint(QPainter::Antialiasing);
 
     ui->unit_select->addItem("1:1");
 
@@ -39,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->target_select->addItem("sigmoid", setptType::SIGMOID);
     ui->target_select->addItem("squarestep", setptType::SQUARESTEP);
 
-    ui->dt_enter->setText("0.02");
+    ui->dt_enter->setText(QString::number(0.02));
 
     connect(ui->Kp_slider, &QSlider::valueChanged, this, &MainWindow::updateLineEdits);
     connect(ui->Ki_slider, &QSlider::valueChanged, this, &MainWindow::updateLineEdits);
@@ -192,20 +206,24 @@ void MainWindow::updateSliders() {
 
 void MainWindow::updateGraph() {
     // PID output
-    QLineSeries *series = new QLineSeries(pidChart);
+    QLineSeries *PIDSeries = new QLineSeries(pidChart);
     std::pair<std::vector<double>, std::vector<ODEState>> results = solverThread->getResults();
     size_t len = results.first.size();
     for (size_t i = 0; i < len; i++) {
-        series->append(results.first[i], results.second[i][0]);
+        PIDSeries->append(results.first[i], results.second[i][0]);
     }
-    series->setName("PID Controller");
+    PIDSeries->setName("PID Controller");
     pidChart->removeAllSeries();
-    pidChart->addSeries(series);
-    series->attachAxis(pidChart->axisX());
-    series->attachAxis(pidChart->axisY());
+    pidChart->addSeries(PIDSeries);
+    PIDSeries->attachAxis(pidChart->axisX());
+    PIDSeries->attachAxis(pidChart->axisY());
 
     // Setpoint
     QLineSeries *setptSeries = new QLineSeries(pidChart);
+    QLineSeries *porp = new QLineSeries(pidChart);
+    QLineSeries *integ = new QLineSeries(pidChart);
+    QLineSeries *deriv = new QLineSeries(pidChart);
+    QLineSeries *outpow = new QLineSeries(pidChart);
     for (size_t i = 0; i < len; i++) {
         int setpt_index = ui->target_select->currentIndex();
         double setp;
@@ -224,17 +242,45 @@ void MainWindow::updateGraph() {
             break;
         }
         setptSeries->append(results.first[i], setp);
+        porp->append(results.first[i],
+                     ui->Kp_text->text().toDouble() * (setp - results.second[i][0]));
+        integ->append(results.first[i], ui->Ki_text->text().toDouble() * results.second[i][2]);
+        deriv->append(results.first[i], ui->Kd_text->text().toDouble() * results.second[i][1]);
+        outpow->append(results.first[i],
+                       (ui->Kp_text->text().toDouble() * (setp - results.second[i][0])) +
+                           (ui->Ki_text->text().toDouble() * results.second[i][2]) +
+                           (ui->Kd_text->text().toDouble() * results.second[i][1]));
     }
     setptSeries->setName("Setpoint");
     pidChart->addSeries(setptSeries);
     setptSeries->attachAxis(pidChart->axisX());
     setptSeries->attachAxis(pidChart->axisY());
 
+    porp->setName("Proportional term");
+    integ->setName("Integral term");
+    deriv->setName("Derivative term");
+    outpow->setName("Total output power");
+
+    compChart->removeAllSeries();
+    compChart->addSeries(porp);
+    compChart->addSeries(integ);
+    compChart->addSeries(deriv);
+    compChart->addSeries(outpow);
+    porp->attachAxis(compChart->axisX());
+    porp->attachAxis(compChart->axisY());
+    integ->attachAxis(compChart->axisX());
+    integ->attachAxis(compChart->axisY());
+    deriv->attachAxis(compChart->axisX());
+    deriv->attachAxis(compChart->axisY());
+    outpow->attachAxis(compChart->axisX());
+    outpow->attachAxis(compChart->axisY());
+
     // Trigger resize event to properly redraw the graph
     resizeEvent(nullptr);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
+    // PID Chart
     pidChart->setMargins(QMargins(0, 0, 0, 0));
     pidChart->setPos(0, 0);
     QSize outSize = ui->out_graph->size();
@@ -243,6 +289,16 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
     pidChart->resize(outSize);
     // Set manually in order to force shrinkage when necessary
     outScene->setSceneRect(0, 0, outSize.width(), outSize.height());
+
+    // Component chart
+    compChart->setMargins(QMargins(0, 0, 0, 0));
+    compChart->setPos(0, 0);
+    outSize = ui->comp_graph->size();
+    // Shrink because this size is slightly too big
+    outSize -= QSize(20, 30);
+    compChart->resize(outSize);
+    // Set manually in order to force shrinkage when necessary
+    compScene->setSceneRect(0, 0, outSize.width(), outSize.height());
 }
 
 MainWindow::~MainWindow() {

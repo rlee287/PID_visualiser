@@ -30,9 +30,11 @@ class MainWindow : public QMainWindow {
 
     PIDSolver *solverThread;
     QtCharts::QChart *pidChart;
-    QtCharts::QValueAxis theX;
-    QtCharts::QValueAxis theY;
     QtCharts::QChart *compChart;
+    QtCharts::QValueAxis thePIDX;
+    QtCharts::QValueAxis theCompX;
+    QtCharts::QValueAxis thePIDY;
+    QtCharts::QValueAxis theCompY;
     QGraphicsScene *outScene;
     QGraphicsScene *compScene;
 
