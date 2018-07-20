@@ -2,7 +2,6 @@
 
 using namespace boost::numeric::odeint;
 
-#include <stdio.h>
 PIDSolver::PIDSolver(QObject *parent) : QThread(parent) {
     calculate = false;
 }
@@ -16,9 +15,9 @@ void PIDSolver::run() {
     while (true) {
         if (calculate) {
             ODEState initial(3);
-            initial[0] = 0;
-            initial[1] = 0;
-            initial[2] = 0;
+            initial[0] = 0; // Response
+            initial[1] = 0; // Derivative of response
+            initial[2] = 0; // Integral of error
             PIDEquation pideq(Kp, Ki, Kd, mass, mu, typ);
             statevec.clear();
             timesteps.clear();
@@ -26,8 +25,10 @@ void PIDSolver::run() {
             emit done();
             calculate = false;
         } else {
+            // Delay to avoid full CPU busy loop
             msleep(50);
         }
+        // Check for external interrupts
         if (QThread::currentThread()->isInterruptionRequested()) {
             return;
         }
