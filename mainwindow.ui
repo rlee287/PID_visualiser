@@ -172,7 +172,7 @@
        <item row="3" column="1">
         <widget class="QSlider" name="mass_slider">
          <property name="minimum">
-          <number>10</number>
+          <number>1</number>
          </property>
          <property name="maximum">
           <number>999</number>
