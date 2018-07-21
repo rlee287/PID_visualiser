@@ -70,16 +70,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->target_select,
             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             &MainWindow::updateSliders);
+    connect(ui->output_clip, &QCheckBox::toggled, this, &MainWindow::updateSliders);
 
     connect(solverThread, &PIDSolver::done, this, &MainWindow::updateGraph);
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::resizeEventSlot);
 
     solverThread->start();
     updateLineEdits();
-}
-
-static float clamp(float in, float lower, float upper) {
-    return std::max(lower, std::min(in, upper));
 }
 
 void MainWindow::updateLineEdits() {
@@ -123,7 +120,8 @@ void MainWindow::updateLineEdits() {
             break;
         }
 
-        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, setpt, false);
+        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, setpt,
+                             ui->output_clip->isChecked(), false);
         changingSlider = false;
     }
 }
@@ -199,7 +197,8 @@ void MainWindow::updateSliders() {
             break;
         }
 
-        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, setpt, false);
+        solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, setpt,
+                             ui->output_clip->isChecked(), false);
         changingText = false;
     }
 }
@@ -246,10 +245,13 @@ void MainWindow::updateGraph() {
                      ui->Kp_text->text().toDouble() * (setp - results.second[i][0]));
         integ->append(results.first[i], ui->Ki_text->text().toDouble() * results.second[i][2]);
         deriv->append(results.first[i], ui->Kd_text->text().toDouble() * results.second[i][1]);
-        outpow->append(results.first[i],
-                       (ui->Kp_text->text().toDouble() * (setp - results.second[i][0])) +
-                           (ui->Ki_text->text().toDouble() * results.second[i][2]) +
-                           (ui->Kd_text->text().toDouble() * results.second[i][1]));
+        double out = (ui->Kp_text->text().toDouble() * (setp - results.second[i][0])) +
+                     (ui->Ki_text->text().toDouble() * results.second[i][2]) +
+                     (ui->Kd_text->text().toDouble() * results.second[i][1]);
+        if (ui->output_clip->isChecked()) {
+            out = clamp(out, -1, 1);
+        }
+        outpow->append(results.first[i], out);
     }
     setptSeries->setName("Setpoint");
     pidChart->addSeries(setptSeries);

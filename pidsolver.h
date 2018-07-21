@@ -17,7 +17,7 @@ class PIDSolver : public QThread {
     ~PIDSolver();
     void run() override;
     void update(double kp, double ki, double kd, double m, double Mu, double Dt, setptType setpoint,
-                bool wait);
+                bool clip, bool wait);
     std::pair<std::vector<double>, std::vector<ODEState>> getResults();
 
   signals:
@@ -25,6 +25,7 @@ class PIDSolver : public QThread {
 
   private:
     double Kp, Ki, Kd, mass, mu, dt;
+    bool clipOut;
     setptType typ;
     std::atomic_bool calculate;
     std::vector<double> timesteps;

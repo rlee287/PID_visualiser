@@ -18,7 +18,7 @@ void PIDSolver::run() {
             initial[0] = 0; // Response
             initial[1] = 0; // Derivative of response
             initial[2] = 0; // Integral of error
-            PIDEquation pideq(Kp, Ki, Kd, mass, mu, typ);
+            PIDEquation pideq(Kp, Ki, Kd, mass, mu, clipOut, typ);
             statevec.clear();
             timesteps.clear();
             integrate(pideq, initial, 0.0, 15.0, dt, state_collect(statevec, timesteps));
@@ -36,7 +36,7 @@ void PIDSolver::run() {
 }
 
 void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, double Dt,
-                       setptType setpoint, bool wait) {
+                       setptType setpoint, bool clip, bool wait) {
     while (calculate) {
         // Wait for calculate to become false again
     }
@@ -47,6 +47,7 @@ void PIDSolver::update(double kp, double ki, double kd, double m, double Mu, dou
     mu = Mu;
     dt = Dt;
     typ = setpoint;
+    clipOut = clip;
     calculate = true;
     if (wait) {
         while (calculate) {

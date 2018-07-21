@@ -9,11 +9,12 @@ enum setptType { STEP, SIGMOID, SQUARESTEP };
 
 class PIDEquation {
   public:
-    PIDEquation(double Kp, double Ki, double Kd, double mass, double mu, setptType targ);
+    PIDEquation(double Kp, double Ki, double Kd, double mass, double mu, bool clip, setptType targ);
     void operator()(const ODEState &x, ODEState &dxdt, const double t);
 
   private:
     double Kp, Ki, Kd, mass, mu;
+    bool clip;
     setptType targ;
 };
 
@@ -30,4 +31,6 @@ struct state_collect {
 double step(const double t);
 double sigmoid(const double t);
 double squarestep(const double t);
+
+double clamp(double in, double lower, double upper);
 #endif // PIDODE_H
