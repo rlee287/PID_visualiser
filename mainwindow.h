@@ -23,6 +23,10 @@ class MainWindow : public QMainWindow {
     void updateSliders();
     void updateLineEdits();
     void updateGraph();
+
+  private slots:
+    void on_save_image_clicked();
+    void on_save_data_clicked();
     void resizeEventSlot();
 
   private:
@@ -38,6 +42,10 @@ class MainWindow : public QMainWindow {
     QtCharts::QValueAxis theCompY;
     QGraphicsScene *outScene;
     QGraphicsScene *compScene;
+
+    double *csvexportarray;
+    size_t doubleArraySize;
+    const size_t numSeries = 7; // update if series changes
 
     bool changingText = false;
     bool changingSlider = false;

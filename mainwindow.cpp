@@ -2,7 +2,9 @@
 
 #include "ui_mainwindow.h"
 
+#include <QFileDialog>
 #include <QScrollBar>
+#include <QTextStream>
 
 #include <boost/range/combine.hpp>
 #include <iostream>
@@ -15,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     solverThread = new PIDSolver(this);
 
     ui->setupUi(this);
+
+    csvexportarray = new double[1];
 
     pidChart = new QChart();
     pidChart->setTitle("PID Simulation");
@@ -277,6 +281,64 @@ void MainWindow::updateGraph() {
     outpow->attachAxis(compChart->axisX());
     outpow->attachAxis(compChart->axisY());
 
+    // Update csvexportarray
+    doubleArraySize = len * numSeries;
+    delete[] csvexportarray;
+    csvexportarray = new double[doubleArraySize];
+    std::cout << doubleArraySize << std::endl;
+    for (size_t i = 0; i < len; i++) {
+        std::cout << i << std::endl;
+        csvexportarray[i * numSeries] = results.first[i];
+    }
+    size_t i = 1;
+    QList<QPointF> pts = PIDSeries->points();
+    size_t j = 0;
+    for (auto it = pts.cbegin(); it != pts.cend(); it++) {
+        size_t index = i + j * numSeries;
+        csvexportarray[index] = (*it).y();
+        j++;
+    }
+    i++;
+    j = 0;
+    pts = setptSeries->points();
+    for (auto it = pts.cbegin(); it != pts.cend(); it++) {
+        size_t index = i + j * numSeries;
+        csvexportarray[index] = (*it).y();
+        j++;
+    }
+    i++;
+    j = 0;
+    pts = porp->points();
+    for (auto it = pts.cbegin(); it != pts.cend(); it++) {
+        size_t index = i + j * numSeries;
+        csvexportarray[index] = (*it).y();
+        j++;
+    }
+    i++;
+    j = 0;
+    pts = integ->points();
+    for (auto it = pts.cbegin(); it != pts.cend(); it++) {
+        size_t index = i + j * numSeries;
+        csvexportarray[index] = (*it).y();
+        j++;
+    }
+    i++;
+    j = 0;
+    pts = deriv->points();
+    for (auto it = pts.cbegin(); it != pts.cend(); it++) {
+        size_t index = i + j * numSeries;
+        csvexportarray[index] = (*it).y();
+        j++;
+    }
+    i++;
+    j = 0;
+    pts = outpow->points();
+    for (auto it = pts.cbegin(); it != pts.cend(); it++) {
+        size_t index = i + j * numSeries;
+        csvexportarray[index] = (*it).y();
+        j++;
+    }
+
     // Trigger resize event to properly redraw the graph
     resizeEvent(nullptr);
 }
@@ -310,4 +372,77 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
 MainWindow::~MainWindow() {
     delete ui;
     delete pidChart;
+    delete[] csvexportarray;
+}
+
+void MainWindow::on_save_image_clicked() {
+    QString fileName = QFileDialog::getSaveFileName(this, "Save graph image", ".", "PNG (*.png)");
+    if (!fileName.isNull()) {
+        resizeEvent(nullptr);
+        ui->out_graph->repaint();
+        QPixmap imagePixels = ui->out_graph->grab();
+        imagePixels.save(fileName);
+    }
+}
+
+void MainWindow::on_save_data_clicked() {
+    QString fileName =
+        QFileDialog::getSaveFileName(this, "Save simulation data", ".", "CSV (*.csv)");
+    if (!fileName.isNull()) {
+        QFile dataFile(fileName);
+        if (!dataFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            return;
+        }
+        /*QList<QAbstractSeries *> pidQSer = pidChart->series();
+        QList<QAbstractSeries *> compQSer = compChart->series();
+        std::list<QLineSeries *> serList;
+        for (auto it = pidQSer.cbegin(); it != pidQSer.cend(); ++it) {
+            serList.push_back(static_cast<QLineSeries *>(*it));
+        }
+        for (auto it = compQSer.cbegin(); it != compQSer.cend(); ++it) {
+            serList.push_back(static_cast<QLineSeries *>(*it));
+        }
+        // They should all have the same size and same x coordinates
+        size_t num_points = serList.back()->points().size();
+        size_t numSeries = serList.size();
+        size_t doubleArraySize = num_points * (numSeries + 1);
+        double *pts = new double[doubleArraySize];
+        std::cout << doubleArraySize;
+        size_t serIndex = 0;
+        for (auto it = serList.cbegin(); it != serList.cend(); ++it) {
+            size_t pointIndex = 0;
+            QList<QPointF> ptlist = (*it)->points();
+            for (auto itpt = ptlist.cbegin(); itpt != ptlist.cend(); ++itpt) {
+                size_t index = serIndex + numSeries * pointIndex;
+                if (pointIndex == 0) {
+                    // pts[index] = (*itpt).x();
+                    pointIndex++;
+                    index += numSeries;
+                    // std::cout << index << std::endl;
+                }
+                // pts[index] = (*itpt).y();
+                // std::cout << index << std::endl;
+                pointIndex++;
+            }
+            serIndex++;
+        }*/
+        dataFile.write(
+            "Time,PIDController,Setpoint,Proportional,Integral,Derivative,OutputPower\n");
+        for (size_t i = 0; i < doubleArraySize; i++) {
+            std::cout << csvexportarray[i] << std::endl;
+            dataFile.write(QString::number(csvexportarray[i]).toLatin1());
+            if (i > 0 && i % numSeries == 0) {
+                dataFile.write("\n");
+            } else {
+                dataFile.write(",");
+            }
+        }
+        std::cout.flush();
+        dataFile.flush();
+        // delete[] pts;
+        dataFile.close();
+    }
+    /*if (it != serList.cend() && it == std::prev(serList.cend())) {
+        // no comma
+    }*/
 }
