@@ -287,7 +287,7 @@ void MainWindow::updateGraph() {
     csvexportarray = new double[doubleArraySize];
     std::cout << doubleArraySize << std::endl;
     for (size_t i = 0; i < len; i++) {
-        std::cout << i << std::endl;
+        std::cout << i * numSeries << std::endl;
         csvexportarray[i * numSeries] = results.first[i];
     }
     size_t i = 1;
@@ -296,6 +296,7 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
+        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -304,6 +305,7 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
+        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -312,6 +314,7 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
+        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -320,6 +323,7 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
+        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -328,6 +332,7 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
+        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -336,6 +341,7 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
+        std::cout << index << std::endl;
         j++;
     }
 
@@ -431,7 +437,7 @@ void MainWindow::on_save_data_clicked() {
         for (size_t i = 0; i < doubleArraySize; i++) {
             std::cout << csvexportarray[i] << std::endl;
             dataFile.write(QString::number(csvexportarray[i]).toLatin1());
-            if (i > 0 && i % numSeries == 0) {
+            if (i % numSeries == (numSeries - 1)) {
                 dataFile.write("\n");
             } else {
                 dataFile.write(",");
