@@ -282,12 +282,16 @@ void MainWindow::updateGraph() {
     outpow->attachAxis(compChart->axisY());
 
     // Update csvexportarray
+    // csvexportarray deleted and recreated each time it is updated because size may change
+    // No need for STL container overhead
+    /* Row format:
+     * time output setpoint proportional integral derivative outpower
+     * Data written row by row into csvexportarray
+     */
     doubleArraySize = len * numSeries;
     delete[] csvexportarray;
     csvexportarray = new double[doubleArraySize];
-    std::cout << doubleArraySize << std::endl;
     for (size_t i = 0; i < len; i++) {
-        std::cout << i * numSeries << std::endl;
         csvexportarray[i * numSeries] = results.first[i];
     }
     size_t i = 1;
@@ -296,7 +300,6 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
-        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -305,7 +308,6 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
-        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -314,7 +316,6 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
-        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -323,7 +324,6 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
-        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -332,7 +332,6 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
-        std::cout << index << std::endl;
         j++;
     }
     i++;
@@ -341,7 +340,6 @@ void MainWindow::updateGraph() {
     for (auto it = pts.cbegin(); it != pts.cend(); it++) {
         size_t index = i + j * numSeries;
         csvexportarray[index] = (*it).y();
-        std::cout << index << std::endl;
         j++;
     }
 
@@ -399,43 +397,9 @@ void MainWindow::on_save_data_clicked() {
         if (!dataFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
             return;
         }
-        /*QList<QAbstractSeries *> pidQSer = pidChart->series();
-        QList<QAbstractSeries *> compQSer = compChart->series();
-        std::list<QLineSeries *> serList;
-        for (auto it = pidQSer.cbegin(); it != pidQSer.cend(); ++it) {
-            serList.push_back(static_cast<QLineSeries *>(*it));
-        }
-        for (auto it = compQSer.cbegin(); it != compQSer.cend(); ++it) {
-            serList.push_back(static_cast<QLineSeries *>(*it));
-        }
-        // They should all have the same size and same x coordinates
-        size_t num_points = serList.back()->points().size();
-        size_t numSeries = serList.size();
-        size_t doubleArraySize = num_points * (numSeries + 1);
-        double *pts = new double[doubleArraySize];
-        std::cout << doubleArraySize;
-        size_t serIndex = 0;
-        for (auto it = serList.cbegin(); it != serList.cend(); ++it) {
-            size_t pointIndex = 0;
-            QList<QPointF> ptlist = (*it)->points();
-            for (auto itpt = ptlist.cbegin(); itpt != ptlist.cend(); ++itpt) {
-                size_t index = serIndex + numSeries * pointIndex;
-                if (pointIndex == 0) {
-                    // pts[index] = (*itpt).x();
-                    pointIndex++;
-                    index += numSeries;
-                    // std::cout << index << std::endl;
-                }
-                // pts[index] = (*itpt).y();
-                // std::cout << index << std::endl;
-                pointIndex++;
-            }
-            serIndex++;
-        }*/
         dataFile.write(
             "Time,PIDController,Setpoint,Proportional,Integral,Derivative,OutputPower\n");
         for (size_t i = 0; i < doubleArraySize; i++) {
-            std::cout << csvexportarray[i] << std::endl;
             dataFile.write(QString::number(csvexportarray[i]).toLatin1());
             if (i % numSeries == (numSeries - 1)) {
                 dataFile.write("\n");
@@ -443,12 +407,7 @@ void MainWindow::on_save_data_clicked() {
                 dataFile.write(",");
             }
         }
-        std::cout.flush();
         dataFile.flush();
-        // delete[] pts;
         dataFile.close();
     }
-    /*if (it != serList.cend() && it == std::prev(serList.cend())) {
-        // no comma
-    }*/
 }
