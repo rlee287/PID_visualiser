@@ -248,10 +248,10 @@ void MainWindow::updateGraph() {
         porp->append(results.first[i],
                      ui->Kp_text->text().toDouble() * (setp - results.second[i][0]));
         integ->append(results.first[i], ui->Ki_text->text().toDouble() * results.second[i][2]);
-        deriv->append(results.first[i], ui->Kd_text->text().toDouble() * results.second[i][1]);
+        deriv->append(results.first[i], -ui->Kd_text->text().toDouble() * results.second[i][1]);
         double out = (ui->Kp_text->text().toDouble() * (setp - results.second[i][0])) +
                      (ui->Ki_text->text().toDouble() * results.second[i][2]) +
-                     (ui->Kd_text->text().toDouble() * results.second[i][1]);
+                     (-ui->Kd_text->text().toDouble() * results.second[i][1]);
         if (ui->output_clip->isChecked()) {
             out = clamp(out, -1, 1);
         }
