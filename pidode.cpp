@@ -1,6 +1,5 @@
 #include "pidode.h"
 
-#include <cmath>
 #include <utility>
 
 PIDEquation::PIDEquation(double Kp, double Ki, double Kd, double mass, double mu, bool clip,
@@ -18,30 +17,6 @@ void state_collect::operator()(const ODEState &x, double t) {
 void state_collect::reset() {
     m_states.clear();
     m_times.clear();
-}
-
-double step(const double t) {
-    return 1;
-}
-
-double sigmoid(const double t) {
-    double result = 1;
-    result += exp(-2 * t + 4);
-    result = 1 / result;
-    result -= 1 / (exp(4) + 1);
-    return result;
-}
-
-double squarestep(const double t) {
-    if (t > 1 && t <= 8) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-double clamp(double in, double lower, double upper) {
-    return std::max(lower, std::min(in, upper));
 }
 
 void PIDEquation::operator()(const ODEState &x, ODEState &dxdt, const double t) {
