@@ -228,16 +228,15 @@ void MainWindow::updateGraph() {
     QLineSeries *deriv = new QLineSeries(pidChart);
     QLineSeries *outpow = new QLineSeries(pidChart);
     for (size_t i = 0; i < len; i++) {
-        int setpt_index = ui->target_select->currentIndex();
         double setp;
-        switch (setpt_index) {
-        case 0:
+        switch (ui->target_select->currentData().toInt()) {
+        case setptType::STEP:
             setp = step(results.first[i]);
             break;
-        case 1:
+        case setptType::SIGMOID:
             setp = sigmoid(results.first[i]);
             break;
-        case 2:
+        case setptType::SQUARESTEP:
             setp = squarestep(results.first[i]);
             break;
         default:
@@ -250,8 +249,8 @@ void MainWindow::updateGraph() {
         integ->append(results.first[i], ui->Ki_text->text().toDouble() * results.second[i][2]);
         deriv->append(results.first[i], -ui->Kd_text->text().toDouble() * results.second[i][1]);
         double out = (ui->Kp_text->text().toDouble() * (setp - results.second[i][0])) +
-                     (ui->Ki_text->text().toDouble() * results.second[i][2]) +
-                     (-ui->Kd_text->text().toDouble() * results.second[i][1]);
+                     (ui->Ki_text->text().toDouble() * results.second[i][2]) -
+                     (ui->Kd_text->text().toDouble() * results.second[i][1]);
         if (ui->output_clip->isChecked()) {
             out = clamp(out, -1, 1);
         }
