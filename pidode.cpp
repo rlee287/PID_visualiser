@@ -28,6 +28,9 @@ void PIDEquation::operator()(const ODEState &x, ODEState &dxdt, const double t) 
     case setptType::SIGMOID:
         SP = sigmoid(t);
         break;
+    case setptType::RAMP:
+        SP = ramp(t);
+        break;
     case setptType::SQUARESTEP:
         SP = squarestep(t);
         break;

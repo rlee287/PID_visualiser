@@ -6,7 +6,7 @@
 
 typedef std::vector<double> ODEState;
 
-enum setptType { STEP, SIGMOID, SQUARESTEP };
+enum setptType { STEP, SIGMOID, RAMP, SQUARESTEP };
 
 class PIDEquation {
   public:
@@ -31,6 +31,14 @@ struct state_collect {
 
 inline double step(const double t) {
     return 1;
+}
+
+inline double ramp(const double t) {
+    if (t < 2) {
+        return t / 2;
+    } else {
+        return 1;
+    }
 }
 
 inline double sigmoid(const double t) {

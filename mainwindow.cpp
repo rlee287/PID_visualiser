@@ -54,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->target_select->addItem("step", setptType::STEP);
     ui->target_select->addItem("sigmoid", setptType::SIGMOID);
+    ui->target_select->addItem("ramp", setptType::RAMP);
     ui->target_select->addItem("squarestep", setptType::SQUARESTEP);
 
     ui->dt_enter->setText(QString::number(0.02));
@@ -108,21 +109,7 @@ void MainWindow::updateLineEdits() {
         dt = clamp(dt, MainWindow::dt_min, MainWindow::dt_max);
         ui->dt_enter->setText(QString::number(dt));
 
-        setptType setpt;
-        switch (ui->target_select->currentIndex()) {
-        case 0:
-            setpt = setptType::STEP;
-            break;
-        case 1:
-            setpt = setptType::SIGMOID;
-            break;
-        case 2:
-            setpt = setptType::SQUARESTEP;
-            break;
-        default:
-            setpt = setptType::STEP;
-            break;
-        }
+        setptType setpt = static_cast<setptType>(ui->target_select->currentData().toInt());
 
         solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, setpt,
                              ui->output_clip->isChecked(), false);
@@ -185,21 +172,7 @@ void MainWindow::updateSliders() {
         dt = clamp(dt, MainWindow::dt_min, MainWindow::dt_max);
         ui->dt_enter->setText(QString::number(dt));
 
-        setptType setpt;
-        switch (ui->target_select->currentIndex()) {
-        case 0:
-            setpt = setptType::STEP;
-            break;
-        case 1:
-            setpt = setptType::SIGMOID;
-            break;
-        case 2:
-            setpt = setptType::SQUARESTEP;
-            break;
-        default:
-            setpt = setptType::STEP;
-            break;
-        }
+        setptType setpt = static_cast<setptType>(ui->target_select->currentData().toInt());
 
         solverThread->update(Kp_val, Ki_val, Kd_val, mass_val, mu_val, dt, setpt,
                              ui->output_clip->isChecked(), false);
@@ -235,6 +208,9 @@ void MainWindow::updateGraph() {
             break;
         case setptType::SIGMOID:
             setp = sigmoid(results.first[i]);
+            break;
+        case setptType::RAMP:
+            setp = ramp(results.first[i]);
             break;
         case setptType::SQUARESTEP:
             setp = squarestep(results.first[i]);
