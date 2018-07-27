@@ -30,7 +30,11 @@ struct state_collect {
 };
 
 inline double step(const double t) {
-    return 1;
+    if (t < 0) {
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 inline double ramp(const double t) {
