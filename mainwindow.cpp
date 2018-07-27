@@ -243,9 +243,9 @@ void MainWindow::updateGraph() {
     setptSeries->attachAxis(pidChart->axisX());
     setptSeries->attachAxis(pidChart->axisY());
 
-    porp->setName("Proportional term");
-    integ->setName("Integral term");
-    deriv->setName("Derivative term");
+    porp->setName("Proportional");
+    integ->setName("Integral");
+    deriv->setName("Derivative");
     outpow->setName("Total output power");
 
     compChart->removeAllSeries();
