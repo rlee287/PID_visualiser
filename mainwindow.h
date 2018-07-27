@@ -58,6 +58,7 @@ class MainWindow : public QMainWindow {
     constexpr static double Kp_max = 3;
     constexpr static double Ki_max = 0.5;
     constexpr static double Kd_max = 1.5;
+    constexpr static double mass_min = 0.001;
     constexpr static double mass_max = 1.5;
     constexpr static double mu_max = 2;
 

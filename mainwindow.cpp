@@ -127,16 +127,22 @@ void MainWindow::updateSliders() {
         double mass_val = ui->mass_text->text().toDouble(&mass_OK);
         double mu_val = ui->mu_text->text().toDouble(&mu_OK);
 
+        Kp_val = clamp(Kp_val, 0, MainWindow::Kp_max);
+        Ki_val = clamp(Ki_val, 0, MainWindow::Ki_max);
+        Kd_val = clamp(Kd_val, 0, MainWindow::Kd_max);
+        mass_val = clamp(mass_val, MainWindow::mass_min, MainWindow::mass_max);
+        mu_val = clamp(mu_val, 0, MainWindow::mu_max);
+
         changingText = true;
         if (Kp_OK) {
-            double Kp_sl = clamp(Kp_val, 0, MainWindow::Kp_max);
+            double Kp_sl = Kp_val;
             ui->Kp_text->setText(QString::number(Kp_sl));
             Kp_sl /= MainWindow::Kp_slider_multiplier;
             Kp_sl *= (ui->Kp_slider->maximum() + 1);
             ui->Kp_slider->setValue((int)Kp_sl);
         }
         if (Ki_OK) {
-            double Ki_sl = clamp(Ki_val, 0, MainWindow::Ki_max);
+            double Ki_sl = Ki_val;
             ui->Ki_text->setText(QString::number(Ki_sl));
             Ki_sl /= MainWindow::Ki_slider_multiplier;
             Ki_sl *= (ui->Ki_slider->maximum() + 1);
@@ -144,7 +150,7 @@ void MainWindow::updateSliders() {
             ui->Ki_slider->setValue((int)Ki_sl);
         }
         if (Kd_OK) {
-            double Kd_sl = clamp(Kd_val, 0, MainWindow::Kd_max);
+            double Kd_sl = Kd_val;
             ui->Kd_text->setText(QString::number(Kd_sl));
             Kd_sl /= MainWindow::Kd_slider_multiplier;
             Kd_sl *= (ui->Kd_slider->maximum() + 1);
@@ -152,7 +158,7 @@ void MainWindow::updateSliders() {
             ui->Kd_slider->setValue((int)Kd_sl);
         }
         if (mass_OK) {
-            double mass_sl = clamp(mass_val, 0, MainWindow::mass_max);
+            double mass_sl = mass_val;
             ui->mass_text->setText(QString::number(mass_sl));
             mass_sl /= MainWindow::mass_slider_multiplier;
             mass_sl *= (ui->mass_slider->maximum() + 1);
@@ -160,7 +166,7 @@ void MainWindow::updateSliders() {
             ui->mass_slider->setValue((int)mass_sl);
         }
         if (mu_OK) {
-            double mu_sl = clamp(mu_val, 0, MainWindow::mu_max);
+            double mu_sl = mu_val;
             ui->mu_text->setText(QString::number(mu_sl));
             mu_sl /= MainWindow::mu_slider_multiplier;
             mu_sl *= (ui->mu_slider->maximum() + 1);
