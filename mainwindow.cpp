@@ -354,12 +354,6 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
     compScene->setSceneRect(0, 0, outSize.width(), outSize.height());
 }
 
-MainWindow::~MainWindow() {
-    delete ui;
-    delete pidChart;
-    delete[] csvexportarray;
-}
-
 void MainWindow::on_save_image_clicked() {
     QString fileName = QFileDialog::getSaveFileName(this, "Save graph image", ".", "PNG (*.png)");
     if (!fileName.isNull()) {
@@ -391,4 +385,10 @@ void MainWindow::on_save_data_clicked() {
         dataFile.flush();
         dataFile.close();
     }
+}
+
+MainWindow::~MainWindow() {
+    delete ui;
+    delete pidChart;
+    delete[] csvexportarray;
 }
